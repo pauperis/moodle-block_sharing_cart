@@ -115,7 +115,7 @@ echo $OUTPUT->header();
 			}
 			function confirm_delete_selected()
 			{
-				return confirm("', htmlspecialchars(
+				return confirm("', s(
 					get_string('confirm_delete_selected', 'block_sharing_cart')
 				), '");
 			}
@@ -154,7 +154,7 @@ echo $OUTPUT->header();
 				 style="float:left; height:16px;" id="delete_'.$id.'" />
 				<div style="float:left;">', sharing_cart\renderer::render_modicon($item), '</div>
 				<div style="float:left;">
-					<label for="delete_'.$id.'">', $item->modtext, '</label>
+					<label for="delete_'.$id.'">', format_string($item->modtext), '</label>
 				</div>
 			</li>';
 			if (++$i % 10 == 0) {
@@ -169,8 +169,8 @@ echo $OUTPUT->header();
 		echo '
 		<div style="clear:both;"><!-- clear floating --></div>
 		<div>
-			<input type="button" onclick="history.back();" value="', get_string('cancel'), '" />
-			<input type="submit" name="delete_checked" value="', get_string('deleteselected'), '" />
+			<input type="button" onclick="history.back();" value="', s(get_string('cancel')), '" />
+			<input type="submit" name="delete_checked" value="', s(get_string('deleteselected')), '" />
 		</div>
 		</form>';
 	}
