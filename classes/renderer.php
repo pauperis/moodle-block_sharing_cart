@@ -63,9 +63,9 @@ class renderer
 		$depth = count($components) - 1;
 		return '
 		<li class="directory">
-			<div class="sc-indent-' . $depth . '" title="' . htmlspecialchars($path) . '">
-				<img class="activityicon iconsmall" src="' . $OUTPUT->pix_url('f/folder') . '" alt="" />
-				<span class="instancename">' . htmlspecialchars(end($components)) . '</span>
+			<div class="sc-indent-' . $depth . '" title="' . s($path) . '">
+				<img class="activityicon iconsmall" src="' . s($OUTPUT->pix_url('f/folder')) . '" alt="" />
+				<span class="instancename">' . format_string(end($components)) . '</span>
 			</div>
 			<ul class="list" style="display:none;">';
 	}
@@ -90,7 +90,7 @@ class renderer
 				<li class="activity ' . $class . '" id="block_sharing_cart-item-' . $item->id . '">
 					<div class="sc-indent-' . $depth . '">
 						' . self::render_modicon($item) . '
-						<span class="instancename">' . $item->modtext . '</span>
+						<span class="instancename">' . format_string($item->modtext) . '</span>
 						<span class="commands"></span>
 					</div>
 				</li>';
@@ -130,7 +130,7 @@ class renderer
 				$src = $OUTPUT->pix_url($item->modicon);
 			}
 		}
-		return '<img class="activityicon iconsmall" src="' . $src . '" alt="" />';
+		return '<img class="activityicon iconsmall" src="' . s($src) . '" alt="" />';
 	}
 
 	public static function render_label($modtext)
