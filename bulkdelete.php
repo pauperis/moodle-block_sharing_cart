@@ -30,6 +30,7 @@ $delete_param = function_exists('optional_param_array')
 	: optional_param('delete', null, PARAM_RAW);
 if (is_array($delete_param)) try {
 	
+	confirm_sesskey();
 	set_time_limit(0);
 	
 	$delete_ids = array_map('intval', array_keys($delete_param));
@@ -135,6 +136,7 @@ echo $OUTPUT->header();
 		</script>
 		<form action="', $PAGE->url->out_omit_querystring(), '"
 		 method="post" id="form" onsubmit="return confirm_delete_selected();">
+		<input type="hidden" name="sesskey" value="', s(sesskey()), '" /> 
 		<div style="display:none;">
         	' . html_writer::input_hidden_params($PAGE->url) . '
 		</div>
