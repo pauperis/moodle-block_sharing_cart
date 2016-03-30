@@ -81,6 +81,11 @@ class renderer
 		$components = array_filter(explode('/', trim($path, '/')), 'strlen');
 		$depth = count($components);
 		$class = $item->modname . ' ' . "modtype_{$item->modname}";
+
+		if ($item->modname == 'label') {
+			$item->modtext = self::render_label($item->modtext);
+		}
+
 		return '
 				<li class="activity ' . $class . '" id="block_sharing_cart-item-' . $item->id . '">
 					<div class="sc-indent-' . $depth . '">
@@ -126,5 +131,18 @@ class renderer
 			}
 		}
 		return '<img class="activityicon iconsmall" src="' . $src . '" alt="" />';
+	}
+
+	public static function render_label($modtext)
+	{
+		preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $modtext, $result);
+		$img_src = array_pop($result);
+
+		if (!empty($img_src)) {
+			$path_parts = pathinfo($img_src);
+			$modtext = urldecode($path_parts['filename']);
+		}
+
+		return $modtext;
 	}
 }
