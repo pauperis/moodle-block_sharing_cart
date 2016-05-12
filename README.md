@@ -11,6 +11,8 @@ The "master" branch is no longer compatible with Moodle 2.2 or earlier.
 Change Log
 ----------
 
+* 3.0, release 1
+  * Compatible with Moodle 3.0
 * 2.9, release 1
   * Compatible with Moodle 2.9
 * 2.6, release 1 patch 7
