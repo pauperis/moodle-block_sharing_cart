@@ -222,7 +222,7 @@ YUI.add('block_sharing_cart', function (Y)
                         .addClass('move-' + id + '-to-' + to)
                         .set('title', str('movehere'))
                         .append(
-                            Y.Node.create('<img class="movetarget"/>')
+                            Y.Node.create('<img class="move_target"/>')
                                 .set('alt', str('movehere'))
                                 .set('src', M.util.image_url('movehere'))
                             );
@@ -274,7 +274,7 @@ YUI.add('block_sharing_cart', function (Y)
                     .set('href', href)
                     .set('title', str('copyhere'))
                     .append(
-                        Y.Node.create('<img class="movetarget"/>')
+                        Y.Node.create('<img class="move_target"/>')
                             .set('alt', str('copyhere'))
                             .set('src', M.util.image_url('movehere'))
                         );
