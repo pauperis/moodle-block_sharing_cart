@@ -135,8 +135,8 @@ class controller
 		// generate a filename from the module info
 		$modtext = $cm->modname == 'label' ? self::get_cm_intro($cm) : $cm->name;
 		$cleanname = \clean_filename(strip_tags($modtext));
-		if (\core_text::strlen($cleanname) > self::MAX_FILENAME)
-			$cleanname = \core_text::substr($cleanname, 0, self::MAX_FILENAME) . '_';
+		if ($this->get_string_length($cleanname) > self::MAX_FILENAME)
+			$cleanname = $this->get_sub_string($cleanname, 0, self::MAX_FILENAME) . '_';
 		$filename = sprintf('%s-%s.mbz', $cleanname, date('Ymd-His'));
 		
 		// backup the module into the predefined area
@@ -203,6 +203,42 @@ class controller
 			'filename' => $filename,
 		));
 		$record->insert();
+	}
+	
+	/**
+	 * Multibyte safe get_string_length() function, uses mbstring or iconv for UTF-8, falls back to typo3.
+	 *
+	 * @param string $text input string
+	 * @return int number of characters
+	 */
+	private function get_string_length($text)
+	{
+		$textlength = 0;
+		if (method_exists('textlib', 'strlen')) {
+			$textlength = \textlib::strlen($text);
+		} else if (method_exists('core_text', 'strlen')) {
+			$textlength = \core_text::strlen($text);
+		}
+		return $textlength;
+	}
+	
+	/**
+	 * Multibyte safe get_sub_string() function, uses mbstring or iconv for UTF-8, falls back to typo3.
+	 *
+	 * @param string $text string to truncate
+	 * @param int $start negative value means from end
+	 * @param int $len maximum length of characters beginning from start
+	 * @return string portion of string specified by the $start and $len
+	 */
+    private function get_sub_string($text, $start, $length)
+	{
+		$result = 0;
+		if (method_exists('textlib', 'substr')) {
+			$result = \textlib::substr($text, $start, $length);
+		} else if (method_exists('core_text', 'substr')) {
+			$result = \core_text::substr($text, $start, $length);
+		}
+		return $result;
 	}
 	
 	/**

@@ -75,6 +75,9 @@ class block_sharing_cart extends block_base
 		}
 		
 		$this->page->requires->css('/blocks/sharing_cart/styles.css');
+		if ($this->is_special_version()) {
+			$this->page->requires->css('/blocks/sharing_cart/custom.css');
+		}
 		$this->page->requires->js('/blocks/sharing_cart/module.js');
 		$this->page->requires->yui_module('block_sharing_cart', 'M.block_sharing_cart.init', array(), null, true);
 		$this->page->requires->strings_for_js(
@@ -83,13 +86,13 @@ class block_sharing_cart extends block_base
 			);
 		$this->page->requires->strings_for_js(
 			array('copyhere', 'notarget', 'backup', 'restore', 'movedir', 'clipboard',
-			      'confirm_backup', 'confirm_userdata', 'confirm_delete'),
+					'confirm_backup', 'confirm_userdata', 'confirm_delete'),
 			__CLASS__
 			);
 		
 		$footer = '<div style="display:none;">'
-		        . '<div class="header-commands">' . $this->get_header() . '</div>'
-		        . '</div>';
+				. '<div class="header-commands">' . $this->get_header() . '</div>'
+				. '</div>';
 		return $this->content = (object)array('text' => $html, 'footer' => $footer);
 	}
 
@@ -102,19 +105,52 @@ class block_sharing_cart extends block_base
 	private function get_header()
 	{
 		global $OUTPUT;
-		
 		// link to bulkdelete
 		$alt = get_string('bulkdelete', __CLASS__);
 		$src = $OUTPUT->pix_url('bulkdelete', __CLASS__);
 		$url = new moodle_url('/blocks/sharing_cart/bulkdelete.php', array('course' => $this->page->course->id));
-		$bulkdelete = '<a class="icon editing_bulkdelete" title="' . s($alt) . '" href="' . s($url) . '">'
-		            . '<img src="' . s($src) . '" alt="' . s($alt) . '" />'
-		            . '</a>';
 		
-		// help for Sharing Cart
+		return $this->get_bulk_delete($src, $alt, $url) . $this->get_help_icon();
+	}
+	
+	/**
+	 *  Get bulk delete
+	 *  
+	 *  @param string $src
+	 *  @param string $alt
+	 *  @param moodle_url $url
+	 *  @return string
+	 */
+	private function get_bulk_delete($src, $alt, $url)
+	{	
+		$bulkdelete = '<a class="editing_bulkdelete" title="' . s($alt) . '" href="' . s($url) . '">'
+		        . '<img src="' . s($src) . '" alt="' . s($alt) . '" />'
+		                . '</a>';
+		
+		return $bulkdelete;
+	}
+	
+	/**
+	 *  Get help icon
+	 *  
+	 *  @return string
+	 */
+	private function get_help_icon()
+	{
+		global $OUTPUT;
 		$helpicon = $OUTPUT->help_icon('sharing_cart', __CLASS__);
-		
-		return $bulkdelete . $helpicon;
+		$helpicon = str_replace('class="', 'class="help-icon ', $helpicon);
+		return $helpicon;
+	}
+	
+	/**
+	 *  Check Moodle 3.2 or later
+	 * 
+	 *  @return boolean
+	 */
+	private function is_special_version()
+	{
+		return moodle_major_version() >= 3.2;
 	}
 
 	/**

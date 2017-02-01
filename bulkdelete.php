@@ -136,9 +136,9 @@ echo $OUTPUT->header();
 		</script>
 		<form action="', $PAGE->url->out_omit_querystring(), '"
 		 method="post" id="form" onsubmit="return confirm_delete_selected();">
-		<input type="hidden" name="sesskey" value="', s(sesskey()), '" /> 
+		<input type="hidden" name="sesskey" value="', s(sesskey()), '" />
 		<div style="display:none;">
-        	' . html_writer::input_hidden_params($PAGE->url) . '
+			' . html_writer::input_hidden_params($PAGE->url) . '
 		</div>
 		<div><label style="cursor:default;">
 			<input type="checkbox" checked="checked" onclick="check_all(this);"

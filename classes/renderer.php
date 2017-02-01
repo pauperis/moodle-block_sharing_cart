@@ -64,7 +64,7 @@ class renderer
 		return '
 		<li class="directory">
 			<div class="sc-indent-' . $depth . '" title="' . s($path) . '">
-				<img class="activityicon iconsmall" src="' . s($OUTPUT->pix_url('f/folder')) . '" alt="" />
+				<img class="activityicon iconsmall iconcustom" src="' . s($OUTPUT->pix_url('f/folder')) . '" alt="" />
 				<span class="instancename">' . format_string(end($components)) . '</span>
 			</div>
 			<ul class="list" style="display:none;">';
@@ -130,7 +130,7 @@ class renderer
 				$src = $OUTPUT->pix_url($item->modicon);
 			}
 		}
-		return '<img class="activityicon iconsmall" src="' . s($src) . '" alt="" />';
+		return '<img class="activityicon iconsmall iconcustom" src="' . s($src) . '" alt="" />';
 	}
 
 	public static function render_label($modtext)
