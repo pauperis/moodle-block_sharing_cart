@@ -99,6 +99,17 @@ YUI.add('block_sharing_cart', function (Y)
             }
             return url;
         }
+        
+        /**
+         *  Check special layout (theme boost)
+         *  
+         *  @return {Boolean}
+         */
+        function verify_layout()
+        {
+            var menuelement = $block.one('.menubar .dropdown .dropdown-menu');
+            return (typeof menuelement != 'undefined' && menuelement != null);
+        }
 
         /**
          *  Create a command icon
@@ -108,14 +119,16 @@ YUI.add('block_sharing_cart', function (Y)
          */
         function create_command(name, pix)
         {
+            var imageelement = Y.Node.create('<img class="iconsmall "/>')
+                        .set('alt', str(name))
+                        .set('src', M.util.image_url(pix || icon[name].pix));
+            if (verify_layout()) {
+                imageelement.addClass('iconcustom');
+            }
             return Y.Node.create('<a href="javascript:void(0)"/>')
                 .addClass(icon[name].css)
                 .set('title', str(name))
-                .append(
-                    Y.Node.create('<img class="iconsmall"/>')
-                        .set('alt', str(name))
-                        .set('src', M.util.image_url(pix || icon[name].pix))
-                    );
+                .append(imageelement);
         }
 
         /**
@@ -222,7 +235,7 @@ YUI.add('block_sharing_cart', function (Y)
                         .addClass('move-' + id + '-to-' + to)
                         .set('title', str('movehere'))
                         .append(
-                            Y.Node.create('<img class="movetarget"/>')
+                            Y.Node.create('<img class="move_target"/>')
                                 .set('alt', str('movehere'))
                                 .set('src', M.util.image_url('movehere'))
                             );
@@ -274,7 +287,7 @@ YUI.add('block_sharing_cart', function (Y)
                     .set('href', href)
                     .set('title', str('copyhere'))
                     .append(
-                        Y.Node.create('<img class="movetarget"/>')
+                        Y.Node.create('<img class="move_target"/>')
                             .set('alt', str('copyhere'))
                             .set('src', M.util.image_url('movehere'))
                         );
@@ -402,16 +415,74 @@ YUI.add('block_sharing_cart', function (Y)
          */
         this.init = function ()
         {
-            M.str.block_sharing_cart['pluginname'] = $block.one('h2').get('text');
+            M.str.block_sharing_cart['pluginname'] = this.get_plugin_name();
             
             // arrange header icons (bulkdelete, help)
-            $block.one('.header-commands').get('children').each(function ()
-            {
-                $block.one('.header .commands').append(this);
-            });
-            
+            this.init_block_header();
             this.init_item_tree();
             this.init_activity_commands();
+        }
+        
+		/**
+         *  Initialize the Sharing Cart block header
+         */
+        this.init_block_header = function ()
+        {
+            var isspeciallayout = verify_layout();
+            this.init_bulk_delete(isspeciallayout);
+            this.init_help_icon(isspeciallayout);
+        }
+        
+		/**
+         *  Initialize the delete bulk
+         */
+        this.init_bulk_delete = function (isspeciallayout)
+        {
+            var bulkdelete = $block.one('.header-commands .editing_bulkdelete');
+            if (typeof bulkdelete != 'undefined' && bulkdelete != null) {
+                if (isspeciallayout) {
+                    bulkdelete = bulkdelete.setAttribute('role', 'menuitem').addClass('dropdown-item menu-action');
+                    bulkdelete.one('img').addClass('icon');
+                    bulkdelete.append(Y.Node.create('<span class="menu-action-text"/>').addClass('sc-space-5').append(bulkdelete.get('title')));
+                    $block.one('.menubar .dropdown .dropdown-menu').append(bulkdelete);
+                } else {
+                    $block.one('.header .commands').append(bulkdelete);
+                }
+            }
+        }
+        
+        /**
+         *  Initialize the help icon
+         */
+        this.init_help_icon = function (isspeciallayout)
+        {
+            var helpicon = $block.one('.header-commands .help-icon');
+            if (isspeciallayout) {
+                helpicon = helpicon.setAttribute('data-placement', 'left');
+                helpicon = helpicon.prepend(Y.Node.create('<span/>').append(M.str.block_sharing_cart['pluginname']));
+                $block.one('.header-commands').get('parentNode').setStyle('display', 'block');
+            } else {
+                $block.one('.header .commands').append(helpicon);
+            }
+        }
+        
+        /**
+         *  Get plugin name
+         */
+        this.get_plugin_name = function ()
+        {
+            var $headertext = '';
+            var $blockheader = $block.one('h2');
+            if (typeof $blockheader == 'undefined' || $blockheader == null) {
+                //process for moodle 3.2
+                $blockheader = $block.one('h3');
+                if (typeof $blockheader != 'undefined' && $blockheader != null) {
+                    $headertext = $blockheader.get('text');
+                }
+            } else {
+                $headertext = $blockheader.get('text');
+            }
+            return $headertext;
         }
 
         /**
@@ -656,7 +727,19 @@ YUI.add('block_sharing_cart', function (Y)
                         $backup.one('img').replace(Y.Node.create('<i class="fa fa-cloud-download icon"/>'));
                     }
                 } else {
-                    $activity.one('.commands').append($backup);
+                    $menu = $activity.one('div[role="menu"]');
+                    if ($menu) {
+                        $backup = create_special_activity_command('backup');
+                        $menu.append($backup.set('role', 'menuitem'));
+                        if ($menu.getStyle('display') == 'none') {
+                            $backup.append(Y.Node.create('<span class="menu-action-text"/>').append($backup.get('title')));
+                        }
+                        if ($menu.one('i.fa')) { // Essential theme
+                            $backup.one('img').replace(Y.Node.create('<i class="fa fa-cloud-download icon"/>'));
+                        }
+                    } else {
+                        $activity.one('.commands').append($backup);
+                    }
                 }
                 $backup.on('click', this.on_backup, this);
             }
@@ -666,6 +749,25 @@ YUI.add('block_sharing_cart', function (Y)
             } else {
                 Y.Node.all('.course-content li.activity').each(add_backup_command, this);
             }
+        }
+        
+        /**
+         *  Create a command icon for moodle 3.2
+         *  
+         *  @param {String} name  The command name, predefined in icon
+         *  @param {String} [pix] The icon pix name to override
+         */
+        function create_special_activity_command(name, pix)
+        {
+            return Y.Node.create('<a href="javascript:void(0)"/>')
+                .addClass(icon[name].css)
+                .addClass('dropdown-item menu-action cm-edit-action')
+                .set('title', str(name))
+                .append(
+                    Y.Node.create('<img class="icon"/>')
+                        .set('alt', str(name))
+                        .set('src', M.util.image_url(pix || icon[name].pix))
+                    );
         }
     }
 
