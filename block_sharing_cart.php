@@ -63,16 +63,12 @@ class block_sharing_cart extends block_base
 		$controller = new sharing_cart\controller();
 		$html = $controller->render_tree($USER->id);
 		
-		if (moodle_major_version() >= 2.7) {
-			// Moodle 2.7 or later runs always with Ajax
-		} elseif (empty($CFG->enableajax)) {
-			$html = $this->get_content_noajax();
-		} else {
-			$noscript = html_writer::tag('noscript',
-				html_writer::tag('div', get_string('requirejs', __CLASS__), array('class' => 'error'))
-				);
-			$html = $noscript . $html;
-		}
+        /* Place the <noscript> tag to give out an error message if JavaScript is not enabled in the browser.
+         * Adding bootstrap classes to show colored info in bootstrap based themes. */
+        $noscript = html_writer::tag('noscript',
+            html_writer::tag('div', get_string('requirejs', __CLASS__), array('class' => 'error alert alert-danger'))
+            );
+        $html = $noscript . $html;
 		
 		$this->page->requires->css('/blocks/sharing_cart/styles.css');
 		if ($this->is_special_version()) {
