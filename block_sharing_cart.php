@@ -103,7 +103,7 @@ class block_sharing_cart extends block_base
 		global $OUTPUT;
 		// link to bulkdelete
 		$alt = get_string('bulkdelete', __CLASS__);
-		$src = $OUTPUT->pix_url('bulkdelete', __CLASS__);
+		$src = $OUTPUT->image_url('bulkdelete', __CLASS__);
 		$url = new moodle_url('/blocks/sharing_cart/bulkdelete.php', array('course' => $this->page->course->id));
 		
 		return $this->get_bulk_delete($src, $alt, $url) . $this->get_help_icon();
