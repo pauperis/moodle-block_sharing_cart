@@ -64,7 +64,7 @@ class renderer
 		return '
 		<li class="directory">
 			<div class="sc-indent-' . $depth . '" title="' . s($path) . '">
-				<img class="activityicon iconsmall iconcustom" src="' . s($OUTPUT->pix_url('f/folder')) . '" alt="" />
+				<img class="activityicon iconsmall iconcustom" src="' . s($OUTPUT->image_url('f/folder')) . '" alt="" />
 				<span class="instancename">' . format_string(end($components)) . '</span>
 			</div>
 			<ul class="list" style="display:none;">';
@@ -120,14 +120,14 @@ class renderer
 
 		if ($item->modname === 'label')
 			return '';
-		$src = $OUTPUT->pix_url('icon', $item->modname);
+		$src = $OUTPUT->image_url('icon', $item->modname);
 		if (!empty($item->modicon)) {
 			// @see /lib/modinfolib.php#get_icon_url()
 			if (strncmp($item->modicon, 'mod/', 4) == 0) {
 				list ($modname, $iconname) = explode('/', substr($item->modicon, 4), 2);
-				$src = $OUTPUT->pix_url($iconname, $modname);
+				$src = $OUTPUT->image_url($iconname, $modname);
 			} else {
-				$src = $OUTPUT->pix_url($item->modicon);
+				$src = $OUTPUT->image_url($item->modicon);
 			}
 		}
 		return '<img class="activityicon iconsmall iconcustom" src="' . s($src) . '" alt="" />';
